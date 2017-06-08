@@ -61,14 +61,20 @@ function getCharImageData (char, options) {
 function getOpticalParams (data) {
 	var buf = data.data, w = data.width, h = data.height
 
-	var x, y, r, i, j, sum, area, hullArea, xSum, ySum, avg = Array(h), avgX = Array(h), cx, cy, bounds, avg2 = Array(h);
+	var x, y, r, i, j, sum, area, hullArea, xSum, ySum, rowAvg = Array(h), rowAvgX = Array(h), cx, cy, bounds, rowAvgArea = Array(h), top = 0, bottom = 0, left = w, right = 0
 
 	for (y = 0; y < h; y++) {
 		sum = 0, area = 0, hullArea = 0, xSum = 0, j = y*4*w
 
 		bounds = getBounds(buf.subarray(j, j + 4*w), 4)
 
-		if (bounds[0] === bounds[1]) continue
+		if (bounds[0] === bounds[1]) {
+			continue
+		}
+		else {
+			if (!top) top = y
+			bottom = y
+		}
 
 		for (x = bounds[0]; x < bounds[1]; x++) {
 			i = x*4
@@ -78,18 +84,21 @@ function getOpticalParams (data) {
 			area += r*r
 		}
 
-		avg2[y] = area === 0 ? 0 : area/w
-		avg[y] = sum === 0 ? 0 : sum/w
-		avgX[y] = sum === 0 ? 0 : xSum/sum
+		rowAvgArea[y] = area === 0 ? 0 : area/w
+		rowAvg[y] = sum === 0 ? 0 : sum/w
+		rowAvgX[y] = sum === 0 ? 0 : xSum/sum
+
+		if (bounds[0] < left) left = bounds[0]
+		if (bounds[1] > right) right = bounds[1]
 	}
 
 	sum = 0, ySum = 0, xSum = 0
 	for (y = 0; y < h; y++) {
-		if (!avg[y]) continue;
+		if (!rowAvg[y]) continue;
 
-		ySum += avg[y]*y
-		sum += avg[y]
-		xSum += avgX[y]*avg[y]
+		ySum += rowAvg[y]*y
+		sum += rowAvg[y]
+		xSum += rowAvgX[y]*rowAvg[y]
 	}
 
 	cy = ySum/sum
@@ -97,7 +106,7 @@ function getOpticalParams (data) {
 
 	return {
 		center: [cx, cy],
-		box: [],
+		box: [left, top, right, bottom],
 		area: 0
 	}
 }

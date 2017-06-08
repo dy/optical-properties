@@ -61,18 +61,27 @@ function update (char) {
 	console.timeEnd(char + ' time')
 	console.log(char + ' properties:', props)
 
+	let {box, center, area} = props
+
+	//center of mass cross
+	ctxIn.fillStyle = 'rgba(250, 150, 0, .5)'
+	ctxIn.fillRect(center[0], 0, 1, h)
+	ctxIn.fillRect(0, center[1], w, 1)
+
+	//bounding box
+	ctxIn.strokeStyle = 'rgba(0, 250, 150, .5)'
+	ctxIn.strokeRect(box[0], box[1], box[2] - box[0], box[3] - box[1])
+
 	//render output
 	ctxOut.fillStyle = 'black'
 	ctxOut.fillRect(0, 0, w, h)
 
+	//real center cross
 	ctxOut.fillStyle = 'rgba(0, 150, 250, .25)'
 	ctxOut.fillRect(w/2, 0, 1, h)
 	ctxOut.fillRect(0, h/2, w, 1)
 
-	ctxIn.fillStyle = 'rgba(250, 150, 0, .5)'
-	ctxIn.fillRect(props.center[0], 0, 1, h)
-	ctxIn.fillRect(0, props.center[1], w, 1)
-
+	//font
 	ctxOut.fillStyle = 'white'
 	ctxOut.textBaseline = 'middle'
 	ctxOut.textAlign = 'center'
