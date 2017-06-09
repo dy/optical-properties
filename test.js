@@ -11,7 +11,7 @@ inputEl.style.width = '4rem'
 inputEl.style.fontSize = '1.5rem'
 inputEl.style.marginBottom = '1rem'
 inputEl.maxlength = 1
-inputEl.value = '.'
+inputEl.value = '◌'
 inputEl.onchange = e => {
 	let v = inputEl.value[0]
 	inputEl.value = v
@@ -61,8 +61,7 @@ function update (char) {
 
 	let {bounds: box, center, radius} = props
 	let scale = h*.25/radius
-	let diff = [w/2 - center[0], h/2 - center[1]]
-	let off = (.5*(box[3]+box[1]) - h*.5)
+	let diff = [Math.floor(w/2 - center[0]), h/2 - center[1]]
 
 	//center of mass cross
 	ctxIn.fillStyle = 'rgba(250, 150, 0, .5)'
@@ -93,19 +92,20 @@ function update (char) {
 
 
 //draw set of letters
-/*(function () {
+(function () {
 	let canvas = document.body.appendChild(document.createElement('canvas'))
-	canvas.width = 600
+	canvas.width = 720
 	canvas.height = 200
+	canvas.style.marginTop = '1rem'
 	let ctx = canvas.getContext('2d')
 
 	let w = canvas.width, h = canvas.height
-	let chars = '●#✝+×▲▼_▇◌◦⧖⧗⧓'
-	let step = 50
-	let fs = 25
+	let chars = '●✝+×✕▲▼_▇◌◦□⧖⧓◆✦✶❇'
+	let step = 40
+	let fs = 20
 
-	ctx.fillStyle = 'black'
-	ctx.fillRect(0, 0, w, h)
+	// ctx.fillStyle = 'black'
+	// ctx.fillRect(0, 0, w, h)
 
 	ctx.textBaseline = 'middle'
 	ctx.textAlign = 'center'
@@ -118,18 +118,21 @@ function update (char) {
 		ctx.fillRect(i*step, step/2, step, 1)
 
 		ctx.font = fs + 'px sans-serif'
-		ctx.fillStyle = 'white'
+		ctx.fillStyle = 'black'
 		ctx.fillText(chars[i], i*step + step/2, step/2)
 
-		let {center, bounds} = optics(chars[i], {height: step, fontSize: fs})
-		let scale = step*.5/(bounds[3] - bounds[1])
+		let {center, bounds, radius} = optics(chars[i], {size: step*10, fontSize: fs*10})
+		center[0] /= 10, center[1] /= 10, radius /= 10, bounds[3] /= 10, bounds[1] /= 10
+		let scale = step*.25/radius
+		let diff = [Math.floor(step/2 - center[0]), step/2 - center[1]]
+		let off = (.5*(bounds[3] + bounds[1]) - h*.5)
 
 		ctx.fillStyle = 'rgba(250, 150, 0, .25)'
 		ctx.fillRect(i*step + step/2, step, 1, step)
 		ctx.fillRect(i*step, step + step/2, step, 1)
 
-		ctx.fillStyle = 'white'
+		ctx.fillStyle = 'black'
 		ctx.font = fs*scale + 'px sans-serif'
-		ctx.fillText(chars[i], i*step + step/2 - center[0] + step/2, step + step/2 - center[1] + step/2)
+		ctx.fillText(chars[i], i*step + step/2 + diff[0]*scale + .5, step + step/2 + diff[1]*scale + .5)
 	}
-})()*/
+})()

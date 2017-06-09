@@ -4,7 +4,8 @@
   "description": "Calculate optical properties of a character, imageData or canvas",
   "main": "index.js",
   "scripts": {
-    "test": "budo test"
+    "test": "budo test",
+    "build": "browserify test.js -g babelify | indexhtmlify | metadataify | github-cornerify > demo/index.html"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/dfcreative/optical-properties#readme",
   "devDependencies": {
+    "babelify": "^7.3.0",
     "enable-mobile": "^1.0.7"
   }
 }

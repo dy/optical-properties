@@ -1,35 +1,45 @@
 # optical-properties [![unstable](http://badges.github.io/stability-badges/dist/unstable.svg)](http://github.com/badges/stability-badges)
 
-Get optical params for a character, such as center of mass and area. Useful to do kerning, to normalize character size or to align vertically/horizontally.
+Get optical params of a character, canvas or image data. Useful to do kerning, normalize size or adjust vertical/horizontal alignment.
 
 See [demo](https://dfcreative.github.io/optical-properties).
+
+## Usage
 
 [![npm install optical-properties](https://nodei.co/npm/optical-properties.png?mini=true)](https://npmjs.org/package/optical-properties/)
 
 ```js
 const optics = require('optical-properties')
 
+let w = canvas.width, h = canvas.height
+
 //get optical params
-let props = optics('▲')
+let {bounds, center, radius} = optics('▲', {size: h, fontSize: h/2})
+
+//make sure radius of char is at least half of canvas height
+let scale = h*.5 / (radius*2)
+
+//optical center shift from the real center
+let diff = [w*.5 - center[0], h*.5 - center[1]]
 
 //draw normalized character
-ctx.fontSize = size * props.scale
-ctx.fillText('▲', x + props.x, y + props.y)
+ctx.font = size*cale + 'px sans-serif'
+ctx.fillText('▲', w*.5 + diff[0]*scale, h*.5 + diff[1]*scale)
 
 ```
 
-### let props = optics(character|canvas|imageData, options?)
+### let props = optics(char|canvas|imageData, options?)
 
-Measures optical properties of a character, canvas or imageData based on the options.
+Measures optical properties of a character, canvas or imageData based on the options. Canvas is expected to be rectangular
 
 Options:
 
-* `size` − size of canvas to use, bigger is slower but more precise and vice-versa.
+* `size` − size of canvas to use, bigger is slower but more precise and vice-versa. Defaults to `200`.
 * `fontFamily` − font family to use for the character, defaults to `sans-serif`.
-* `fontSize` − size of glyph.
+* `fontSize` − size of glyph, defaults to `100`.
 
-Returns:
+Returns object with properties:
 
-* `center` − coordinates of optical center as `[cx, cy]`
-* `bounds` − character bounding box `[left, top, right, bottom]`
-* `radius` − distance from the optical center to the outmost point
+* `center` − coordinates of optical center as `[cx, cy]`.
+* `bounds` − character bounding box `[left, top, right, bottom]`.
+* `radius` − distance from the optical center to the outmost point.
