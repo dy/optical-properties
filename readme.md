@@ -1,6 +1,8 @@
-# optical-properties [![unstable](http://badges.github.io/stability-badges/dist/unstable.svg)](http://github.com/badges/stability-badges)
+# optical-properties [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges) [![Build Status](https://img.shields.io/travis/dfcreative/optical-properties.svg)](https://travis-ci.org/dfcreative/optical-properties)
 
 Get optical params of a character, canvas or image data. Useful to do kerning, normalize size or adjust vertical/horizontal alignment.
+
+![optical-properties](https://github.com/dfcreative/optical-properties/blob/gh-pages/index.png?raw=true)
 
 See [demo](https://dfcreative.github.io/optical-properties).
 
