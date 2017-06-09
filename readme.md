@@ -48,9 +48,6 @@ Returns object with properties:
 * `bounds` − character bounding box `[left, top, right, bottom]`.
 * `radius` − distance from the optical center to the outmost point.
 
-## Principle
-
-It rasterizes the character into defined canvas size and calculates statistics for the sample set.
 
 ## Credits
 
