@@ -1,4 +1,4 @@
-# optical-properties [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges) [![Build Status](https://img.shields.io/travis/dfcreative/optical-properties.svg)](https://travis-ci.org/dfcreative/optical-properties)
+# optical-properties [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges)
 
 Get optical params of a character, canvas or image data. Useful to do kerning, normalize size or adjust vertical/horizontal alignment.
 
@@ -13,7 +13,7 @@ See [demo](https://dfcreative.github.io/optical-properties).
 ```js
 const optics = require('optical-properties')
 
-let w = canvas.width, h = canvas.height
+let w = canvas.width, h = canvas.height, ctx = canvas.getContext('2d')
 
 //get optical params
 let {bounds, center, radius} = optics('▲', {size: h, fontSize: h/2})
@@ -30,9 +30,11 @@ ctx.fillText('▲', w*.5 + diff[0]*scale, h*.5 + diff[1]*scale)
 
 ```
 
+## API
+
 ### let props = optics(char|canvas|imageData, options?)
 
-Measures optical properties of a character, canvas or imageData based on the options. Canvas is expected to be rectangular
+Measures optical properties of a character, canvas or imageData based on options. Canvas is expected to be rectangular.
 
 Options:
 
