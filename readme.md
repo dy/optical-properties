@@ -47,3 +47,11 @@ Returns object with properties:
 * `center` − coordinates of optical center as `[cx, cy]`.
 * `bounds` − character bounding box `[left, top, right, bottom]`.
 * `radius` − distance from the optical center to the outmost point.
+
+## Principle
+
+It rasterizes the character into defined canvas size and calculates statistics for the sample set.
+
+## Credits
+
+© 2017 Dima Yv. MIT License
