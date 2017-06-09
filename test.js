@@ -87,7 +87,7 @@ function update (char) {
 	ctxOut.textBaseline = 'middle'
 	ctxOut.textAlign = 'center'
 	ctxOut.font = fs*scale + 'px sans-serif'
-	ctxOut.fillText(char, w/2 + diff[0], h/2 + diff[1]*scale)
+	ctxOut.fillText(char, w/2 + diff[0]*scale, h/2 + diff[1]*scale)
 }
 
 

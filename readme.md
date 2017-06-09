@@ -16,27 +16,11 @@ let props = optics('▲')
 ctx.fontSize = size * props.scale
 ctx.fillText('▲', x + props.x, y + props.y)
 
-/*
-{
-	//optical center
-	center: [.5, .65],
-
-	//bounding box
-	box: [.1, .2, .9, .8],
-
-	//char area occupied
-	area: .65,
-	hullArea: .65,
-
-	//scale
-	scale: 1.05
-}
-*/
 ```
 
 ### let props = optics(character|canvas|imageData, options?)
 
-Measures optical properties for the character, canvas or imageData based on the options.
+Measures optical properties of a character, canvas or imageData based on the options.
 
 Options:
 
@@ -47,5 +31,5 @@ Options:
 Returns:
 
 * `center` − coordinates of optical center as `[cx, cy]`
-* `bounds` − character bounding bounds `[left, top, right, bottom]`
-* `scale` − under/overscale based on convex hull variance
+* `bounds` − character bounding box `[left, top, right, bottom]`
+* `radius` − distance from the optical center to the outmost point

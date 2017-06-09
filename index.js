@@ -5,8 +5,7 @@
 
 module.exports = measure
 
-var realCache = {}, hullCache = {},
-	canvas = document.createElement('canvas'),
+var canvas = document.createElement('canvas'),
 	ctx = canvas.getContext('2d')
 
 canvas.width = 200, canvas.height = 200
@@ -15,14 +14,10 @@ measure.canvas = canvas
 
 //returns character [x, y, scale] optical params
 function measure (char, options) {
-	var data, w, h, params,
-		isHull = options && options.hull,
-		cache = isHull ? hullCache : realCache
+	var data, w, h, params
 
 	//figure out argument imageData
 	if (typeof char === 'string') {
-		if (cache[char]) return cache[char]
-
 		data = getCharImageData(char, options)
 		w = data.width, h = data.height
 	}
@@ -36,12 +31,7 @@ function measure (char, options) {
 		data = char
 	}
 
-	var params = getOpticalParams(data)
-	// var hullParams = getOpticalParams(toConvexHull(data))
-
-	if (typeof char === 'string') {
-		cache[char] = params
-	}
+	params = getOpticalParams(data)
 
 	return params
 }
@@ -62,7 +52,7 @@ function getCharImageData (char, options) {
 	ctx.fillStyle = '#000'
 	ctx.fillRect(0, 0, w, h)
 
-	ctx.font = w/2 + 'px ' + family
+	ctx.font = fs + 'px ' + family
 	ctx.textBaseline = 'middle'
 	ctx.textAlign = 'center'
 	ctx.fillStyle = 'white'
@@ -76,10 +66,10 @@ function getCharImageData (char, options) {
 function getOpticalParams (data) {
 	var buf = data.data, w = data.width, h = data.height
 
-	var x, y, r, i, j, sum, area, xSum, ySum, rowAvg = Array(h), rowAvgX = Array(h), cx, cy, bounds, avg, top = 0, bottom = 0, left = w, right = 0, maxR = 0, rowBounds = Array(h), r2
+	var x, y, r, i, j, sum, xSum, ySum, rowAvg = Array(h), rowAvgX = Array(h), cx, cy, bounds, avg, top = 0, bottom = 0, left = w, right = 0, maxR = 0, rowBounds = Array(h), r2
 
 	for (y = 0; y < h; y++) {
-		sum = 0, area = 0, xSum = 0, j = y*4*w
+		sum = 0, xSum = 0, j = y*4*w
 
 		bounds = getBounds(buf.subarray(j, j + 4*w), 4)
 
@@ -96,7 +86,6 @@ function getOpticalParams (data) {
 			r = buf[j + i]
 			sum += r
 			xSum += x*r
-			area += r*r
 		}
 
 		rowAvg[y] = sum === 0 ? 0 : sum/w
@@ -128,7 +117,7 @@ function getOpticalParams (data) {
 
 		r2 = Math.max(
 			dist2(cx - bounds[0], cy - y),
-			dist2(cx - bounds[1], cy - y),
+			dist2(cx - bounds[1], cy - y)
 		)
 		if (r2 > maxR) {
 			maxR = r2
