@@ -5,7 +5,7 @@
 
 module.exports = measure
 
-var cache = {},
+var realCache = {}, hullCache = {},
 	canvas = document.createElement('canvas'),
 	ctx = canvas.getContext('2d')
 
@@ -15,17 +15,21 @@ measure.canvas = canvas
 
 //returns character [x, y, scale] optical params
 function measure (char, options) {
-	var data, w, h, params
+	var data, w, h, params,
+		isHull = options && options.hull,
+		cache = isHull ? hullCache : realCache
 
 	//figure out argument imageData
 	if (typeof char === 'string') {
 		if (cache[char]) return cache[char]
+
 		data = getCharImageData(char, options)
 		w = data.width, h = data.height
 	}
-	else if (char instanceof Canvas) {
+	else if (char instanceof HTMLCanvasElement) {
 		w = char.width, h = char.height
-		data = char.getImageData(0, 0, char.width, char.height)
+		char = char.getContext('2d')
+		data = char.getImageData(0, 0, w, h)
 	}
 	else if (char instanceof ImageData) {
 		w = char.width, h = char.height
@@ -35,6 +39,10 @@ function measure (char, options) {
 	var params = getOpticalParams(data)
 	// var hullParams = getOpticalParams(toConvexHull(data))
 
+	if (typeof char === 'string') {
+		cache[char] = params
+	}
+
 	return params
 }
 
@@ -43,6 +51,13 @@ function getCharImageData (char, options) {
 	if (!options) options = {}
 	var family = options.family || 'sans-serif'
 	var w = canvas.width, h = canvas.height
+
+	var size = options.width || options.height || options.size
+	if (size && size != w) {
+		w = h = canvas.width = canvas.height = size
+	}
+
+	var fs = options.fontSize || w/2
 
 	ctx.fillStyle = '#000'
 	ctx.fillRect(0, 0, w, h)
@@ -61,10 +76,10 @@ function getCharImageData (char, options) {
 function getOpticalParams (data) {
 	var buf = data.data, w = data.width, h = data.height
 
-	var x, y, r, i, j, sum, area, hullArea, xSum, ySum, rowAvg = Array(h), rowAvgX = Array(h), cx, cy, bounds, rowAvgArea = Array(h), top = 0, bottom = 0, left = w, right = 0
+	var x, y, r, i, j, sum, area, xSum, ySum, rowAvg = Array(h), rowAvgX = Array(h), cx, cy, bounds, avg, top = 0, bottom = 0, left = w, right = 0, maxR = 0, rowBounds = Array(h), r2
 
 	for (y = 0; y < h; y++) {
-		sum = 0, area = 0, hullArea = 0, xSum = 0, j = y*4*w
+		sum = 0, area = 0, xSum = 0, j = y*4*w
 
 		bounds = getBounds(buf.subarray(j, j + 4*w), 4)
 
@@ -84,30 +99,46 @@ function getOpticalParams (data) {
 			area += r*r
 		}
 
-		rowAvgArea[y] = area === 0 ? 0 : area/w
 		rowAvg[y] = sum === 0 ? 0 : sum/w
 		rowAvgX[y] = sum === 0 ? 0 : xSum/sum
 
 		if (bounds[0] < left) left = bounds[0]
 		if (bounds[1] > right) right = bounds[1]
+
+		rowBounds[y] = bounds
 	}
 
 	sum = 0, ySum = 0, xSum = 0
 	for (y = 0; y < h; y++) {
-		if (!rowAvg[y]) continue;
+		avg = rowAvg[y]
+		if (!avg) continue;
 
-		ySum += rowAvg[y]*y
-		sum += rowAvg[y]
-		xSum += rowAvgX[y]*rowAvg[y]
+		ySum += avg*y
+		sum += avg
+		xSum += rowAvgX[y]*avg
 	}
 
 	cy = ySum/sum
 	cx = xSum/sum
 
+	maxR = 0, r2 = 0
+	for (y = 0; y < h; y++) {
+		bounds = rowBounds[y]
+		if (!bounds) continue
+
+		r2 = Math.max(
+			dist2(cx - bounds[0], cy - y),
+			dist2(cx - bounds[1], cy - y),
+		)
+		if (r2 > maxR) {
+			maxR = r2
+		}
+	}
+
 	return {
 		center: [cx, cy],
-		box: [left, top, right, bottom],
-		area: 0
+		bounds: [left, top, right, bottom+1],
+		radius: Math.sqrt(maxR)
 	}
 }
 
@@ -133,38 +164,6 @@ function getBounds (arr, stride) {
 	return [left/stride, right/stride]
 }
 
-//convert image data to convex hull
-function toConvexHull (data) {
-	for (y = 0; y < h; y++) {
-		j = y*4*w
-
-		bounds = getBounds(buf.subarray(j, j + 4*w), 4)
-
-		if (bounds[0] === bounds[1]) continue
-
-		//find left/right extremums
-		leftMax = 0, rightMax = 0, left = bounds[0], right = bounds[1]
-		for (x = left; x < right; x++) {
-			i = x*4
-			r = data[j + i]
-			if (r > leftMax) {
-				leftMax = r
-				left = x
-			}
-			else {
-				break
-			}
-		}
-		for (x = right; x > left; x--) {
-			i = x*4
-			r = data[j + i]
-			if (r > rightMax) {
-				rightMax = r
-				right = x
-			}
-			else {
-				break
-			}
-		}
-	}
+function dist2 (x, y) {
+	return x*x + y*y
 }

@@ -41,11 +41,11 @@ Measures optical properties for the character, canvas or imageData based on the 
 Options:
 
 * `size` − size of canvas to use, bigger is slower but more precise and vice-versa.
-* `font` − font family to use for the character, defaults to `sans-serif`.
-* `hull` − calculate params for [convex hull](https://en.wikipedia.org/wiki/Convex_hull) instead of actual character, that is better for icons or enframed shapes, default is `true`.
+* `fontFamily` − font family to use for the character, defaults to `sans-serif`.
+* `fontSize` − size of glyph.
 
 Returns:
 
 * `center` − coordinates of optical center as `[cx, cy]`
-* `box` − character bounding box `[left, top, right, bottom]`
-* `area` − total white area, can be used to normalize characters
+* `bounds` − character bounding bounds `[left, top, right, bottom]`
+* `scale` − under/overscale based on convex hull variance

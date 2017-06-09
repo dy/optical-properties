@@ -11,7 +11,7 @@ inputEl.style.width = '4rem'
 inputEl.style.fontSize = '1.5rem'
 inputEl.style.marginBottom = '1rem'
 inputEl.maxlength = 1
-inputEl.value = '▲'
+inputEl.value = '.'
 inputEl.onchange = e => {
 	let v = inputEl.value[0]
 	inputEl.value = v
@@ -22,9 +22,9 @@ inputEl.onchange = e => {
 
 
 //create canvases
-let w = 200
-let h = 200
-let fs = 100
+let w = 300
+let h = 300
+let fs = 150
 
 let canvasIn = document.body.appendChild(document.createElement('canvas'))
 let ctxIn = canvasIn.getContext('2d')
@@ -37,9 +37,7 @@ let ctxOut = canvasOut.getContext('2d')
 canvasOut.width = w
 canvasOut.height = h
 
-update('▲')
-
-document.body.appendChild(optics.canvas)
+update(inputEl.value)
 
 function update (char) {
 	ctxIn.fillStyle = 'black'
@@ -57,11 +55,14 @@ function update (char) {
 
 
 	console.time(char + ' time')
-	let props = optics(char)
+	let props = optics(char, {size: w, fontSize: fs})
 	console.timeEnd(char + ' time')
 	console.log(char + ' properties:', props)
 
-	let {box, center, area} = props
+	let {bounds: box, center, radius} = props
+	let scale = h*.25/radius
+	let diff = [w/2 - center[0], h/2 - center[1]]
+	let off = (.5*(box[3]+box[1]) - h*.5)
 
 	//center of mass cross
 	ctxIn.fillStyle = 'rgba(250, 150, 0, .5)'
@@ -85,6 +86,50 @@ function update (char) {
 	ctxOut.fillStyle = 'white'
 	ctxOut.textBaseline = 'middle'
 	ctxOut.textAlign = 'center'
-	ctxOut.font = fs + 'px sans-serif'
-	ctxOut.fillText(char, w-props.center[0], h-props.center[1])
+	ctxOut.font = fs*scale + 'px sans-serif'
+	ctxOut.fillText(char, w/2 + diff[0], h/2 + diff[1]*scale)
 }
+
+
+
+//draw set of letters
+/*(function () {
+	let canvas = document.body.appendChild(document.createElement('canvas'))
+	canvas.width = 600
+	canvas.height = 200
+	let ctx = canvas.getContext('2d')
+
+	let w = canvas.width, h = canvas.height
+	let chars = '●#✝+×▲▼_▇◌◦⧖⧗⧓'
+	let step = 50
+	let fs = 25
+
+	ctx.fillStyle = 'black'
+	ctx.fillRect(0, 0, w, h)
+
+	ctx.textBaseline = 'middle'
+	ctx.textAlign = 'center'
+
+	for (let i = 0; i < chars.length; i++) {
+		let char = chars[i]
+
+		ctx.fillStyle = 'rgba(0, 150, 250, .25)'
+		ctx.fillRect(i*step + step/2, 0, 1, step)
+		ctx.fillRect(i*step, step/2, step, 1)
+
+		ctx.font = fs + 'px sans-serif'
+		ctx.fillStyle = 'white'
+		ctx.fillText(chars[i], i*step + step/2, step/2)
+
+		let {center, bounds} = optics(chars[i], {height: step, fontSize: fs})
+		let scale = step*.5/(bounds[3] - bounds[1])
+
+		ctx.fillStyle = 'rgba(250, 150, 0, .25)'
+		ctx.fillRect(i*step + step/2, step, 1, step)
+		ctx.fillRect(i*step, step + step/2, step, 1)
+
+		ctx.fillStyle = 'white'
+		ctx.font = fs*scale + 'px sans-serif'
+		ctx.fillText(chars[i], i*step + step/2 - center[0] + step/2, step + step/2 - center[1] + step/2)
+	}
+})()*/
