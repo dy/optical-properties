@@ -4,7 +4,7 @@ Get optical params of a character, canvas or image data. Useful to do kerning, n
 
 ![optical-properties](https://github.com/dfcreative/optical-properties/blob/gh-pages/index.png?raw=true)
 
-See [demo](https://dfcreative.github.io/optical-properties).
+See [demo](https://dy.github.io/optical-properties).
 
 ## Usage
 
